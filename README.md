@@ -7,3 +7,8 @@ Almost all published computer systems research papers tout in the abstract secti
 
 ### Motivation
 Data visualization is helpful in answering these questions because we are unsure of what the data looks like and, therefore, deriving a summary statistic will only obscure the trends that we are interested in observing.
+
+
+### To Run:
+`npm install`
+`npm run dev`
