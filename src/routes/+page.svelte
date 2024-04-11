@@ -3,6 +3,7 @@
 	import * as d3 from 'd3';
 	import Scatterplot from './Scatterplot.svelte';
 	import BarChart from './BarChart.svelte';
+	import Raincloud from './Raincloud.svelte';
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
 	import { onMount } from 'svelte';
@@ -110,6 +111,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2em;
+	}
+	/* Define margin-top for raincontainer */
+	.raincontainer {
+		margin-top: 2em; /* Adjust as needed */
 	}
 
 	/* place the feature controls and color legend next to each other */
