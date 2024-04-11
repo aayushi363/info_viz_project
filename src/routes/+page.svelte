@@ -3,7 +3,11 @@
 	import * as d3 from 'd3';
 	import Scatterplot from './Scatterplot.svelte';
 	import BarChart from './BarChart.svelte';
+	import PlayerList from './PlayerList.svelte';
+	import ColorLegend from './ColorLegend.svelte';
 	import { onMount } from 'svelte';
+
+	const METRIC_STR = "Metric";
 
 	// data comes from the load function in +page.js
 	export let data;
@@ -16,13 +20,59 @@
 		selectedIndices = indices;
 	}
 
-	// data point that is highlighted in the list
-	let highlightedPlayer = null;
+	let metrics = Array.from(new Set(data.dataset.map(d => d[METRIC_STR])));
+	let metric2str = {
+		AC: "accuracy",
+		BR: "bugs resolved",
+		BW: "bandwidth",
+		C: "execution cost",
+		EF: "energy efficiency",
+		ER: "error rate",
+		ET: "execution time",
+		FL: "failure/error",
+		IN: "interference",
+		LT: "latency",
+		MT: "memory traffic",
+		OV: "overhead",
+		PR: "price",
+		SP: "space",
+		TH: "throughput",
+		WA: "waste",
+		/* TODO : found these in the dataset, not sure of meaning */
+		WE: "FOOBAR",
+		EN: "FOOBAR",
+		LOC: "FOOBAR",
+		A: "FOOBAR",
+		EC: "FOOBAR",
+		IPC: "FOOBAR",
+		AV: "FOOBAR",
+		PH: "FOOBAR"
+	};
+
+	let metric2indices = d3
+		.rollup(
+			data.dataset.map((d, i) => [d[METRIC_STR], i]),
+			g => g.map(([metric, i]) => i),
+			([metric, i]) => metric);
+
+	// // data point that is highlighted in the list
+	// let highlightedPlayer = null;
 
 	// callback function to update highlightedPlayer when the list is hovered over
 	function onhover(player) {
 		highlightedPlayer = player;
 	}
+
+	// get the unique categories in the dataset sorted by count
+	// $: categories = d3
+	// 	.groupSort(
+	// 		data.dataset,
+	// 		(g) => g.length,
+	// 		(d) => d[colorFeature]
+	// 	)
+	// 	.reverse();
+
+	// $: color = d3.scaleOrdinal().domain(categories).range(d3.schemeTableau10);
 </script>
 
 <h1 class="title">Exploring Trends and Patterns in Systems Research</h1>
@@ -31,6 +81,18 @@
 	<div class="header1">
 		<h2>What metric does the author use more frequently in Sytems Research to get Published?</h2>
 		<BarChart dataset={data.dataset}/>
+	</div>
+</div>
+
+<div class=raincontainer>
+	<div class="header">
+	</div>
+	<div class=main>
+		{#each metrics as metric}
+			{#if metric2indices.get(metric).length > 10}
+				<Raincloud dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+			{/if}
+		{/each}
 	</div>
 </div>
 
