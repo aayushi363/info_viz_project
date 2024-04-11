@@ -2,17 +2,11 @@
 	import './style.css';
 	import * as d3 from 'd3';
 	import Scatterplot from './Scatterplot.svelte';
-	import FeatureControls from './FeatureControls.svelte';
 	import BarChart from './BarChart.svelte';
-	import PlayerList from './PlayerList.svelte';
-	import ColorLegend from './ColorLegend.svelte';
 	import { onMount } from 'svelte';
 
 	// data comes from the load function in +page.js
 	export let data;
-
-	// default features to visualize
-	let Groupby = 'None';
 
 	// indices of the brushed data points in the scatter plot
 	let selectedIndices = [];
@@ -29,37 +23,14 @@
 	function onhover(player) {
 		highlightedPlayer = player;
 	}
-
-	// get the unique categories in the dataset sorted by count
-	// $: categories = d3
-	// 	.groupSort(
-	// 		data.dataset,
-	// 		(g) => g.length,
-	// 		(d) => d[colorFeature]
-	// 	)
-	// 	.reverse();
-
-	// $: color = d3.scaleOrdinal().domain(categories).range(d3.schemeTableau10);
 </script>
 
-<h1 class="title">What Performance is Reported by Published System Papers</h1>
+<h1 class="title">Exploring Trends and Patterns in Systems Research</h1>
 
 <div class="container">
-	<div class="header">
-		<FeatureControls dataset={data.dataset} bind:Groupby />
-	</div>
-	<div class="main">
-		<!-- <PlayerList dataset={data.dataset} {selectedIndices} {onhover} />
-		<Scatterplot
-			dataset={data.dataset}
-			{xFeature}
-			{yFeature}
-			{colorFeature}
-			{color}
-			{highlightedPlayer}
-			{onbrush}
-		/> -->
-		<BarChart dataset={data.dataset} bind:Groupby  />
+	<div class="header1">
+		<h2>What metric does the author use more frequently in Sytems Research to get Published?</h2>
+		<BarChart dataset={data.dataset}/>
 	</div>
 </div>
 
@@ -84,18 +55,17 @@
 		display: flex;
 		gap: 2em;
 		align-items: center;
-	}
+	}*/
 
-	.main {
-		/* make this div take up the rest of the container */
-		/* flex: 1; */
-		/* allow the div to shrink */
-		/* min-height: 0; */
-		/* place the children next to each other */
-		/* display: flex; */
-		/* add space between them */
-		/* gap: 2em; */
-	/* }  */
+	.header1 {
+		/* center the barchart */
+		/* center the barchart */
+		justify-content: center;
+		align-items: center;
+		display: flex;
+		height: 100%;
+		flex: 1;
+	} 
 
 	/* styles.css */
 	.title {
