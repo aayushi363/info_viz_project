@@ -86,9 +86,10 @@
 </div>
 
 <div class=raincontainer>
-	<div class="header">
+	<div class="header1"> 
 	</div>
 	<div class=main>
+		<h2> Measure distribution for each metric</h2>
 		{#each metrics as metric}
 			{#if metric2indices.get(metric).length > 10}
 				<Raincloud dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
