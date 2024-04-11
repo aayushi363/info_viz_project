@@ -69,30 +69,36 @@
 			right: margin.right + Math.round(innerWidth * elevationCloudFrac) + rainExtraMargin.up };
 
 	// Get the values that will be displayed
-	$: filteredDataset = filteredIndices.map((i) => dataset[i]);
-	$: values = filterOutliers(filteredDataset.map(d => d[feature]));
+	let values = filteredIndices.map((i) => dataset[i]).map(d => d[feature]);
 
-	// // Vis bounds: set bounds of vis to contain 90% of data
-	// $: lowerBound = d3.quantile(values, 0.1);
-	// $: upperBound = d3.quantile(values, 0.9);
-	$: [lowerBound, upperBound] = d3.extent(values);
-
-	// Compute histogram of values mapping middle bucket value to count
-	$: bucketSize = (upperBound - lowerBound) / (buckets - 2);
-	$: hist = d3
+	// Compute histogram of values mapping value in middle of bucket value to count
+	// Figure out size of buckets based on non-outliers and number of buckets
+	let [visLowerBound, visUpperBound] = d3.extent(filterOutliers(values));
+	let [lowerBound, upperBound] = d3.extent(values);
+	let bucketSize = (visUpperBound - visLowerBound) / (buckets - 2);
+	let hist = d3
 		.bin()
 		.thresholds(d3.range(lowerBound - bucketSize, upperBound + 1, bucketSize))
 		(values)
 		.map(bin => [(bin.x0 + bin.x1) / 2.0, bin.length]);
-	$: countExtent = d3.extent(hist.map(d => d[1]));
+	let countExtent = d3.extent(hist.map(d => d[1]));
+
+	$: valueScaleRange = [visLowerBound, visUpperBound];
 
 	// This scale is shared by all plots
 	$: valuesScale = d3
 		.scaleLinear()
-		.domain([lowerBound, upperBound])
+		.domain(valueScaleRange)
 		.range(orientation === "up"
-				? [margin.left, width - margin.right]
-				: [height - margin.bottom, margin.top]);
+			? [margin.left, width - margin.right]
+			: [height - margin.bottom, margin.top]);
+
+	$: valuesScaleInv = d3
+		.scaleLinear()
+		.domain(orientation === "up"
+			? [margin.left, width - margin.right]
+			: [height - margin.bottom, margin.top])
+		.range(valueScaleRange);
 
 	// Used for creating clouds by cloud
 	$: countScale = d3
@@ -135,47 +141,62 @@
 	$: Q50 = d3.quantile(values, 0.5);
 	$: Q75 = d3.quantile(values, 0.75);
 	$: Q90 = d3.quantile(values, 0.9);
+
+	let raincloud;
+	function onDrag(event) {
+		// let xp = Math.sign(valuesScaleInv(event.dx) - valuesScaleInv(0)) * Math.sqrt(Math.abs(valuesScaleInv(event.dx) - valuesScaleInv(0))) * 2;
+		let xp = valuesScaleInv(event.dx) - valuesScaleInv(0);
+		if (valueScaleRange[0] - xp < lowerBound) {
+			valueScaleRange = [lowerBound, lowerBound + (visUpperBound - visLowerBound)];
+		} else if (valueScaleRange[1] - xp > upperBound) {
+			valueScaleRange = [upperBound - (visUpperBound - visLowerBound), upperBound];
+		} else {
+			valueScaleRange = valueScaleRange.map(v => v - xp);
+		}
+	}
+	const drag = d3.drag().on('drag', onDrag)
+	$: d3.select(raincloud).call(drag)
 </script>
 
-<div class="raincloud" bind:borderBoxSize>
+<div class="raincloud" bind:this={raincloud} bind:borderBoxSize>
 	<svg {height} {width}>
-		<g class="cloud">
-			<path d={area(hist)} fill={color} stroke-width=0.01em stroke=black/>
-		</g>
+		{#key valueScaleRange}
+			<g class="cloud">
+				<path d={area(hist)} fill={color} stroke-width=0.01em stroke=black/>
+			</g>
 
-		<g class="rain">
-			{#if orientation === "up"}
-				{#each values as value}
-					<circle r=2 cx={valuesScale(value)} cy={elevationScale(Math.random())} fill={color}/>
-				{/each}
-			{:else}
-				{#each values as value}
-					<circle r=2 cx={elevationScale(Math.random())} cy={valuesScale(value)} fill={color}/>
-				{/each}
-			{/if}
-		</g>
+			<g class="rain">
+				{#if orientation === "up"}
+					{#each values as value}
+						<circle r=2 cx={valuesScale(value)} cy={elevationScale(Math.random())} fill={color}/>
+					{/each}
+				{:else}
+					{#each values as value}
+						<circle r=2 cx={elevationScale(Math.random())} cy={valuesScale(value)} fill={color}/>
+					{/each}
+				{/if}
+			</g>
+
+			<g class="boxplot">
+				{#if orientation === "up"}
+					<rect x={valuesScale(Q25)} y={boxScale(0)} height={Math.abs(boxScale(1) - boxScale(0))} width={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke-width=0.1em stroke=black fill=transparent/>
+					<line x1={valuesScale(Q50)} x2={valuesScale(Q50)} y1={boxScale(0)} y2={boxScale(1)} stroke-width=0.1em stroke=black />
+					<line x1={valuesScale(Q10)} x2={valuesScale(Q25)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.11em stroke=black />
+					<line x1={valuesScale(Q75)} x2={valuesScale(Q90)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.1em stroke=black />
+				{:else}
+					<rect y={valuesScale(Q75)} x={boxScale(0)} width={Math.abs(boxScale(1) - boxScale(0))} height={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke=black fill=transparent/>
+					<line y1={valuesScale(Q50)} y2={valuesScale(Q50)} x1={boxScale(0)} x2={boxScale(1)} stroke=black />
+					<line y1={valuesScale(Q10)} y2={valuesScale(Q25)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
+					<line y1={valuesScale(Q75)} y2={valuesScale(Q90)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
+				{/if}
+
+				<!-- axes -->
+
+				<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} label={axisLabel} />
 		
-		<g class="boxplot">
-			{#if orientation === "up"}
-				<rect x={valuesScale(Q25)} y={boxScale(0)} height={Math.abs(boxScale(1) - boxScale(0))} width={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke-width=0.1em stroke=black fill=transparent/>
-				<line x1={valuesScale(Q50)} x2={valuesScale(Q50)} y1={boxScale(0)} y2={boxScale(1)} stroke-width=0.1em stroke=black />
-				<line x1={valuesScale(Q10)} x2={valuesScale(Q25)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.11em stroke=black />
-				<line x1={valuesScale(Q75)} x2={valuesScale(Q90)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.1em stroke=black />
-			{:else}
-				<rect y={valuesScale(Q75)} x={boxScale(0)} width={Math.abs(boxScale(1) - boxScale(0))} height={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke=black fill=transparent/>
-				<line y1={valuesScale(Q50)} y2={valuesScale(Q50)} x1={boxScale(0)} x2={boxScale(1)} stroke=black />
-				<line y1={valuesScale(Q10)} y2={valuesScale(Q25)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
-				<line y1={valuesScale(Q75)} y2={valuesScale(Q90)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
-			{/if}
-		</g>
-
-
-		<!-- axes -->
-
-		<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} label={axisLabel} />
-<!--
-		<Axis orientation={orientation === "up" ? "left" : "bottom"} scale={valuesScale} {width} {height} {margin} label={axisLabel} />
--->
+				<!-- <Axis orientation={orientation === "up" ? "left" : "bottom"} scale={valuesScale} {width} {height} {margin} label={axisLabel} /> -->
+			</g>
+		{/key}
 	</svg>
 </div>
 
@@ -185,6 +206,7 @@
 		flex: 1;
 		/* be as tall as the parent div */
 		height: 100%;
+		cursor: move;
 	}
 
 	/* animate changes to the lengths of the bars */
