@@ -201,16 +201,21 @@
 </div>
 
 <style>
-	.raincloud {
-		/* take up extra horizontal space in the parent */
-		flex: 1;
-		/* be as tall as the parent div */
-		height: 100%;
-		cursor: move;
-	}
+    .raincloud {
+        /* Set dimensions for each raincloud */
+        width: calc(33.33% - 20px); /* Subtract margin */
+        height: calc(33.33% - 20px); /* Subtract margin */
+        margin: 10px; /* Add margin between rainclouds */
+        float: left; /* Arrange rainclouds in a grid */
+        cursor: move;
+		border: 1px solid black;
 
-	/* animate changes to the lengths of the bars */
-/*	rect {
-		transition: width 250ms;
-	}*/
+    }
+
+    /* Adjust SVG dimensions */
+    svg {
+        width: 100%;
+        height: 100%;
+    }
 </style>
+

@@ -73,19 +73,37 @@
 
 	// $: color = d3.scaleOrdinal().domain(categories).range(d3.schemeTableau10);
 </script>
-
-<h1 class="title">Exploring Trends and Patterns in Systems Research</h1>
+<div class="introduction">
+	<h1 class="title">Exploring Trends and Patterns in Systems Research</h1>
+	<p>
+		Step into the fascinating world of Systems Research! Here, we delve into the big ideas that shape the field of Computer Science. Our webpage is your gateway to exploring the latest trends and intriguing patterns. We've meticulously collected data from three major conferences dedicated to Systems Research. Join us on this journey as we uncover the exciting developments and insights in this dynamic field.	</p>
+</div>
 
 <div class="container">
 	<div class="header1">
-		<h2>What metric does the author use more frequently in Sytems Research to get Published?</h2>
+		<h2>Let's dive into the realm of research and uncover the hottest themes that have captivated the minds of researchers, boasting the highest number of papers.
+		</h2>
+		<h2 style="text-align: center; color:darkred;">How do category compare to each other?</h2>
+
+		<Circles/>
+	</div>
+</div>
+
+<div class="container">
+	<div class="header1">
+		<h2> Describing the predominant metrics used in Systems Research helps identify core evaluation criteria, track prevalent research trends, and evaluate the relevance of emerging methodologies. This visualization shows that Throughput is the most popular metric in the Systems Research community. 
+			</h2>
+			<p> </p>
+		<h2 style="text-align: center; color:darkred;">What metric does the author use more frequently in Sytems Research to get Published?</h2>
 		<BarChart dataset={data.dataset}/>
 	</div>
 </div>
 
 <div class="container">
 	<div class="header1">
-		<h2>Does the choice of metric depends on which Conference we are targetting?</h2>
+		<h2> Studying metric choices across conferences unveils community preferences, aiding researchers in aligning their work with conference expectations and organizers in gauging research diversity and evolution.
+		</h2>
+		<h2  style="text-align: center; color:darkred;">Does the choice of metric depends on which Conference we are targetting?</h2>
 		<Grouped_chart dataset={data.dataset}/>
 	</div>
 </div>
@@ -101,77 +119,75 @@
 	</div>
 </div>
 
-<div class="container">
-	<div class="header1">
-		<h2>How do category compare to each other?</h2>
-		<Circles/>
-	</div>
-</div>
+
 
 <style>
-	.container {
-		/* set the font */
-		font-family: system-ui, sans-serif;
-		font-size: 16px;
-		/* make the div take up the entire screen */
-		height: 100vh;
-		width: 100vw;
-		/* add 32px of padding around the div */
-		padding: 2em;
-		/* put the controls on top of the plots with 32px of space in between */
-		display: flex;
-		
-		gap: 2em;
-	}
-	/* Define margin-top for raincontainer */
-	.raincontainer {
-		margin-top: 2em; /* Adjust as needed */
-	}
+    /* Introduction Section */
+    .introduction {
+        text-align: center;
+        font-weight: bold;
+        font-size: 23px;
+        margin-bottom: 50px;
+        padding: 20px; /* Add padding */
+        background-color: #f0f0f0; /* Add background color */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add box shadow */
+        border-radius: 10px; /* Add border radius */
+        max-width: 800px; /* Limit max width */
+        margin: 0 auto; /* Center horizontally */
+        color: #3b1195; /* Text color */
+    }
 
-	/* place the feature controls and color legend next to each other */
-	/* .header {
-		display: flex;
-		gap: 2em;
-		align-items: center;
-	}*/
+    /* Container */
+    .container {
+        font-family: system-ui, sans-serif;
+        font-size: 16px;
+        height: auto; /* Change height to auto */
+        width: 100vw;
+        padding: 2em;
+        display: flex;
+        flex-direction: column; /* Adjust flex direction */
+        gap: 2em;
+        align-items: center; /* Center content horizontally */
+    }
 
-	.header1 {
-		/* center the barchart */
-		/* center the barchart */
-		justify-content: center;
-		align-items: center;
-		/* display: flex; */
-		height: 100%;
-		flex: 1;
-	} 
+    /* Raincontainer */
+    .raincontainer {
+        margin-top: 2em;
+        text-align: center;
+    }
 
-	/* styles.css */
-	.title {
-		font-family: 'Arial', sans-serif; /* Use a suitable font-family */
-		font-size: 36px;
-		color: #3b1195; /* Change to your desired color */
-		text-align: center;
-		margin-bottom: 30px;
-		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle text shadow */
-	}
+    /* Header */
+    .header1 {
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        text-align: center; /* Center text */
+    }
 
-	.title::before {
-		content: '';
-		display: block;
-		width: 100%;
-		height: 2px; /* Thickness of the underline */
-		background-color: #FFD166; /* Change to your desired underline color */
-		margin-bottom: 10px; /* Adjust as needed */
-	}
+    /* Title */
+    .title {
+        font-family: 'Arial', sans-serif;
+        font-size: 36px;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
 
-	.title::after {
-		content: '';
-		display: block;
-		width: 75%; /* Width of the decorative line */
-		height: 2px; /* Thickness of the decorative line */
-		background-color: #EF476F; /* Change to your desired color */
-		margin: 10px auto 0; /* Adjust margin as needed */
-	}
+    /* Title decoration */
+    .title::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #FFD166;
+        margin-bottom: 10px;
+    }
 
-	
+    .title::after {
+        content: '';
+        display: block;
+        width: 75%;
+        height: 2px;
+        background-color: #EF476F;
+        margin: 10px auto 0;
+    }
 </style>

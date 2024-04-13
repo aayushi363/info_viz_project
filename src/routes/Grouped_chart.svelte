@@ -178,9 +178,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        border: 1px solid black;
+        
     }
     
     .bar:hover {
         transform: translateY(-5px);
     }
+
+
 </style>
