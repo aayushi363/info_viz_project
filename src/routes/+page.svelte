@@ -3,7 +3,8 @@
 	import * as d3 from 'd3';
 	import Scatterplot from './Scatterplot.svelte';
 	import BarChart from './BarChart.svelte';
-	import Raincloud from './Raincloud.svelte';
+	import RaincloudPlot from './RaincloudPlot.svelte';
+	import ScattercloudPlot from './ScattercloudPlot.svelte';
 	import Grouped_chart from './Grouped_chart.svelte';
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
@@ -90,12 +91,15 @@
 	</div>
 </div>
 
-<div class="raincontainer">
-	<div class=main>
-		<h2> Measure distribution for each metric</h2>
+<div class=raincloud-container>
+	<!-- TODO: Make these form a grid -->
+	<h2> Measure distribution for each metric</h2>
+	<div class=rain-clouds>
 		{#each metrics as metric}
 			{#if metric2indices.get(metric).length > 10}
-				<Raincloud dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+				<div class=rain>
+					<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+				</div>
 			{/if}
 		{/each}
 	</div>
@@ -106,6 +110,10 @@
 		<h2>How do category compare to each other?</h2>
 		<Circles/>
 	</div>
+</div>
+
+<div class=scattercloud-container>
+	<ScattercloudPlot dataset={data.dataset} xFeature="Measure" yFeature="Citation" color=steelblue bucketSize=5 />
 </div>
 
 <style>
@@ -124,8 +132,21 @@
 		gap: 2em;
 	}
 	/* Define margin-top for raincontainer */
-	.raincontainer {
+	.raincloud-container {
 		margin-top: 2em; /* Adjust as needed */
+	}
+	.rain-clouds {
+		display: flex;
+  		flex-wrap: wrap;
+  		justify-content: space-between;
+  		width: 100%;
+	}
+
+	.rain {
+  		width: 100%;
+  		height: 400px;
+  		/* background-color: blue; */
+  		margin-bottom: 15px;
 	}
 
 	/* place the feature controls and color legend next to each other */
