@@ -136,6 +136,9 @@
 		display: flex;
 		height: 100%;
 		flex: 1;
+		border: 1px solid black;
+		
+
 	}
 	.bar:hover {
         transform: translateY(-5px);

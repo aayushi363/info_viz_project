@@ -74,8 +74,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #f9f9f9; /* Light grey background */
-        border: 1px solid #ccc;
+        /* background-color: #f9f9f9; Light grey background */
+        /* border: 1px solid #ccc; */
         padding: 20px;
         margin: 20px;
     }
