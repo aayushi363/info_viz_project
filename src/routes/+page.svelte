@@ -113,7 +113,7 @@
 </div>
 
 <div class=scattercloud-container>
-	<ScattercloudPlot dataset={data.dataset} xFeature="Measure" yFeature="Citation" color=steelblue bucketSize=5 />
+	<ScattercloudPlot dataset={data.dataset} xFeature="Measure" yFeature="Citation" color=steelblue buckets=15 />
 </div>
 
 <style>
