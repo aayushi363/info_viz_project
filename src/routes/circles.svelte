@@ -59,12 +59,13 @@
 
 <div class="circles">
     <svg bind:this={svgElement} width="800" height="600" style="border: 1px solid black;">
-        <!-- Tooltip -->
-        <foreignObject x={tooltipX} y={tooltipY} width="100" height="50" style="visibility: {tooltipVisibility}; pointer-events: none;">
-            <div xmlns="http://www.w3.org/1999/xhtml" style="background: white; border: 1px solid black; padding: 8px; border-radius: 6px;">
-                {tooltipContent}
-            </div>
-        </foreignObject>
+        <g>
+            <foreignObject x={tooltipX} y={tooltipY} width="120" height="50" style:visibility={tooltipVisibility}>
+                <div xmlns="http://www.w3.org/1999/xhtml" style="background: white; border: 1px solid black; padding: 10px; border-radius: 5px;">
+                    {tooltipContent}
+                </div>
+            </foreignObject>
+        </g>
     </svg>
 </div>
 
