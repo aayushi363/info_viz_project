@@ -7,6 +7,7 @@
 	import Grouped_chart from './Grouped_chart.svelte';
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
+	import Circles from './circles.svelte';
 	import { onMount } from 'svelte';
 
 	const METRIC_STR = "Metric";
@@ -97,6 +98,13 @@
 				<Raincloud dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
 			{/if}
 		{/each}
+	</div>
+</div>
+
+<div class="container">
+	<div class="header1">
+		<h2>How do category compare to each other?</h2>
+		<Circles/>
 	</div>
 </div>
 
