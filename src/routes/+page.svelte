@@ -9,6 +9,7 @@
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
 	import Circles from './circles.svelte';
+	import ConferenceMetric from './ConferenceMetric.svelte';
 	import { onMount } from 'svelte';
 
 	const METRIC_STR = "Metric";
@@ -87,6 +88,16 @@
 		<h2 style="text-align: center; color:darkred;">How do category compare to each other?</h2>
 
 		<Circles/>
+	</div>
+</div>
+
+<div class="container">
+	<div class="header1">
+		<h2>Let's see which conferecen have the highest bar
+		</h2>
+		<h2 style="text-align: center; color:darkred;">How do category compare to each other?</h2>
+
+		<ConferenceMetric/>
 	</div>
 </div>
 
