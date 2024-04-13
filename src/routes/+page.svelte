@@ -123,49 +123,48 @@
 	</div>
 </div>
 
-<div class="container">
-	<div class="header1">
-		<h2>How do category compare to each other?</h2>
-		<Circles/>
-	</div>
-</div>
-
 <style>
-	.container {
-		/* set the font */
-		font-family: system-ui, sans-serif;
-		font-size: 16px;
-		/* make the div take up the entire screen */
-		height: 100vh;
-		width: 100vw;
-		/* add 32px of padding around the div */
-		padding: 2em;
-		/* put the controls on top of the plots with 32px of space in between */
-		display: flex;
-		
-		gap: 2em;
-	}
-	/* Define margin-top for raincontainer */
-	.raincontainer {
-		margin-top: 2em; /* Adjust as needed */
-	}
+    /* Introduction Section */
+    .introduction {
+        text-align: center;
+        font-weight: bold;
+        font-size: 23px;
+        margin-bottom: 50px;
+        padding: 20px; /* Add padding */
+        background-color: #f0f0f0; /* Add background color */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add box shadow */
+        border-radius: 10px; /* Add border radius */
+        max-width: 800px; /* Limit max width */
+        margin: 0 auto; /* Center horizontally */
+        color: #3b1195; /* Text color */
+    }
 
-	/* place the feature controls and color legend next to each other */
-	/* .header {
-		display: flex;
-		gap: 2em;
-		align-items: center;
-	}*/
+    /* Container */
+    .container {
+        font-family: system-ui, sans-serif;
+        font-size: 16px;
+        height: auto; /* Change height to auto */
+        width: 100vw;
+        padding: 2em;
+        display: flex;
+        flex-direction: column; /* Adjust flex direction */
+        gap: 2em;
+        align-items: center; /* Center content horizontally */
+    }
 
-	.header1 {
-		/* center the barchart */
-		/* center the barchart */
-		justify-content: center;
-		align-items: center;
-		/* display: flex; */
-		height: 100%;
-		flex: 1;
-	} 
+    /* Raincontainer */
+    .raincontainer {
+        margin-top: 2em;
+        text-align: center;
+    }
+
+    /* Header */
+    .header1 {
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        text-align: center; /* Center text */
+    }
 
     /* Title */
     .title {
