@@ -3,7 +3,8 @@
 	import * as d3 from 'd3';
 	import Scatterplot from './Scatterplot.svelte';
 	import BarChart from './BarChart.svelte';
-	import Raincloud from './Raincloud.svelte';
+	import RaincloudPlot from './RaincloudPlot.svelte';
+	import ScattercloudPlot from './ScattercloudPlot.svelte';
 	import Grouped_chart from './Grouped_chart.svelte';
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
@@ -108,61 +109,63 @@
 	</div>
 </div>
 
-<div class="raincontainer">
-	<div class=main>
-		<h2> Measure distribution for each metric</h2>
+<div class=raincloud-container>
+	<!-- TODO: Make these form a grid -->
+	<h2> Measure distribution for each metric</h2>
+	<div class=rain-clouds>
 		{#each metrics as metric}
 			{#if metric2indices.get(metric).length > 10}
-				<Raincloud dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+				<div class=rain>
+					<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+				</div>
 			{/if}
 		{/each}
 	</div>
 </div>
 
-
+<div class="container">
+	<div class="header1">
+		<h2>How do category compare to each other?</h2>
+		<Circles/>
+	</div>
+</div>
 
 <style>
-    /* Introduction Section */
-    .introduction {
-        text-align: center;
-        font-weight: bold;
-        font-size: 23px;
-        margin-bottom: 50px;
-        padding: 20px; /* Add padding */
-        background-color: #f0f0f0; /* Add background color */
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add box shadow */
-        border-radius: 10px; /* Add border radius */
-        max-width: 800px; /* Limit max width */
-        margin: 0 auto; /* Center horizontally */
-        color: #3b1195; /* Text color */
-    }
+	.container {
+		/* set the font */
+		font-family: system-ui, sans-serif;
+		font-size: 16px;
+		/* make the div take up the entire screen */
+		height: 100vh;
+		width: 100vw;
+		/* add 32px of padding around the div */
+		padding: 2em;
+		/* put the controls on top of the plots with 32px of space in between */
+		display: flex;
+		
+		gap: 2em;
+	}
+	/* Define margin-top for raincontainer */
+	.raincontainer {
+		margin-top: 2em; /* Adjust as needed */
+	}
 
-    /* Container */
-    .container {
-        font-family: system-ui, sans-serif;
-        font-size: 16px;
-        height: auto; /* Change height to auto */
-        width: 100vw;
-        padding: 2em;
-        display: flex;
-        flex-direction: column; /* Adjust flex direction */
-        gap: 2em;
-        align-items: center; /* Center content horizontally */
-    }
+	/* place the feature controls and color legend next to each other */
+	/* .header {
+		display: flex;
+		gap: 2em;
+		align-items: center;
+	}*/
 
-    /* Raincontainer */
-    .raincontainer {
-        margin-top: 2em;
-        text-align: center;
-    }
-
-    /* Header */
-    .header1 {
-        justify-content: center;
-        align-items: center;
-        flex: 1;
-        text-align: center; /* Center text */
-    }
+	.header1 {
+		/* center the barchart */
+		/* center the barchart */
+		justify-content: center;
+		align-items: center;
+		/* display: flex; */
+		height: 100%;
+		flex: 1;
+	} 
 
     /* Title */
     .title {

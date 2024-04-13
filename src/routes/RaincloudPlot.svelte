@@ -3,6 +3,7 @@
 <script>
 	import * as d3 from 'd3';
 	import Axis from './Axis.svelte';
+	import { onMount } from 'svelte';
 
 	export let dataset;
 	export let feature;
@@ -14,7 +15,6 @@
 
 	/* Copied directly from: https://stackoverflow.com/a/45804710/6573510 */
 	function filterOutliers(someArray) {
-
 		if(someArray.length < 4)
 			return someArray;
 
@@ -50,23 +50,36 @@
 		: 400;
 
 	const margin = { top: 25, right: 20, bottom: 50, left: 60 };
-	const elevationCloudFrac = 0.7; // percentage of space for cloud (remainder for rain)
-	const rainExtraMargin = {up : 20, down: 20};
+	const elevCloudFrac = 0.7; // percentage of space for cloud
+	const elevBoxFrac = 0.1; // percentage of space for boxplot
+	const elevRainFrac = 1.0 - elevCloudFrac - elevBoxFrac; // percentage of space for rain
+	// const rainExtraMargin = {up : 0, down: 0};
 	const boxplotHeightFrac = 0.05; // height of boxplot relative to container
 
 	$: innerHeight = height - margin.top - margin.bottom;
 	$: innerWidth = width - margin.left - margin.right;
 
 	$: cloudMargin = orientation === "up"
-		? { top: margin.top, right: margin.right, left: margin.left,
-			bottom: margin.bottom + (innerHeight - Math.round(innerHeight * elevationCloudFrac)) }
-		: { top: margin.top, right: margin.right, bottom: margin.bottom,
-			left: margin.left + (innerWidth - Math.round(innerWidth * elevationCloudFrac)) }
+		? { right: margin.right, left: margin.left,
+			top: margin.top + 0,
+			bottom: margin.bottom + Math.round(innerHeight * (1.0 - elevCloudFrac)) }
+		: { top: margin.top, bottom: margin.bottom,
+			right: margin.right + 0,
+			left: margin.left + Math.round(innerWidth * (1.0 - elevCloudFrac)) }
+	$: boxMargin = orientation === "up"
+		? { right: margin.right, left: margin.left,
+			top: margin.top + Math.round(innerHeight * elevCloudFrac),
+			bottom: margin.bottom + Math.round(innerHeight * elevRainFrac) }
+		: { top: margin.top, bottom: margin.bottom,
+			right: margin.right + Math.round(innerWidth * elevCloudFrac),
+			left: margin.left + Math.round(innerWidth * elevRainFrac) };
 	$: rainMargin = orientation === "up"
-		? { right: margin.right, bottom: margin.bottom + rainExtraMargin.down, left: margin.left,
-			top: margin.top + Math.round(innerHeight * elevationCloudFrac) + rainExtraMargin.up }
-		: { top: margin.top, bottom: margin.bottom, left: margin.left + rainExtraMargin.down,
-			right: margin.right + Math.round(innerWidth * elevationCloudFrac) + rainExtraMargin.up };
+		? { right: margin.right, left: margin.left,
+			top: margin.top + Math.round(innerHeight * (1 - elevRainFrac)),
+			bottom: margin.bottom + 0 }
+		: { top: margin.top, bottom: margin.bottom,
+			right: margin.right + Math.round(innerWidth * (1 - elevRainFrac)),
+			left: margin.left + 0 };
 
 	// Get the values that will be displayed
 	let values = filteredIndices.map((i) => dataset[i]).map(d => d[feature]);
@@ -78,9 +91,13 @@
 	let bucketSize = (visUpperBound - visLowerBound) / (buckets - 2);
 	let hist = d3
 		.bin()
-		.thresholds(d3.range(lowerBound - bucketSize, upperBound + 1, bucketSize))
+		.thresholds(d3.range(lowerBound - bucketSize, upperBound + bucketSize + 1, bucketSize))
 		(values)
 		.map(bin => [(bin.x0 + bin.x1) / 2.0, bin.length]);
+	// Add one more bucket to start and end
+	hist.unshift([hist[0][0] - bucketSize,0])
+	hist.push([hist[hist.length - 1][0] + bucketSize,0]);
+
 	let countExtent = d3.extent(hist.map(d => d[1]));
 
 	$: valueScaleRange = [visLowerBound, visUpperBound];
@@ -100,14 +117,15 @@
 			: [height - margin.bottom, margin.top])
 		.range(valueScaleRange);
 
-	// Used for creating clouds by cloud
+	// Used for creating clouds
 	$: countScale = d3
 		.scaleLinear()
 		.domain(countExtent)
 		.range(orientation === "up"
 				? [height - cloudMargin.bottom, cloudMargin.top]
 				: [cloudMargin.left, width - cloudMargin.right]);
-				
+	
+	// Actually create cloud
 	$: area = d3.area().curve(d3.curveBasis);
 	$: if (orientation === "up") {
 		area = area
@@ -134,8 +152,8 @@
 		.scaleLinear()
 		.domain([0,1])
 		.range(orientation === "up"
-				? [countScale(0) - innerHeight * boxplotHeightFrac * 0.5, countScale(0) + innerHeight * boxplotHeightFrac * 0.5]
-				: [countScale(0) - innerWidth * boxplotHeightFrac * 0.5, countScale(0) + innerWidth * boxplotHeightFrac * 0.5]);
+				? [height - boxMargin.bottom, boxMargin.top]
+				: [boxMargin.left, width - boxMargin.right]);
 	$: Q10 = d3.quantile(values, 0.1);
 	$: Q25 = d3.quantile(values, 0.25);
 	$: Q50 = d3.quantile(values, 0.5);
@@ -144,25 +162,41 @@
 
 	let raincloud;
 	function onDrag(event) {
-		// let xp = Math.sign(valuesScaleInv(event.dx) - valuesScaleInv(0)) * Math.sqrt(Math.abs(valuesScaleInv(event.dx) - valuesScaleInv(0))) * 2;
-		let xp = valuesScaleInv(event.dx) - valuesScaleInv(0);
-		if (valueScaleRange[0] - xp < lowerBound) {
-			valueScaleRange = [lowerBound, lowerBound + (visUpperBound - visLowerBound)];
-		} else if (valueScaleRange[1] - xp > upperBound) {
-			valueScaleRange = [upperBound - (visUpperBound - visLowerBound), upperBound];
-		} else {
-			valueScaleRange = valueScaleRange.map(v => v - xp);
+		let dPos = orientation === "up" ? event.dx : event.dy;
+		let dVal = (valuesScaleInv(dPos) - valuesScaleInv(0)) * 8 /* scalar */;
+		if (valueScaleRange[0] - dVal < lowerBound) {
+ 			  valueScaleRange = [lowerBound, lowerBound + (visUpperBound - visLowerBound)];
+    	} else if (valueScaleRange[1] - dVal > upperBound) {
+    		  valueScaleRange = [upperBound - (visUpperBound - visLowerBound), upperBound];
+    	} else {
+			valueScaleRange = valueScaleRange.map(v => v - dVal);
 		}
 	}
 	const drag = d3.drag().on('drag', onDrag)
 	$: d3.select(raincloud).call(drag)
+
+	onMount(() => {
+		if (orientation !== "up") {
+			d3.select("linearGradient")
+				.attr("gradientTransform", "rotate(-90 1 0)");
+		}
+	});
 </script>
 
 <div class="raincloud" bind:this={raincloud} bind:borderBoxSize>
 	<svg {height} {width}>
-		{#key valueScaleRange}
+		<!-- {#key valueScaleRange} -->
 			<g class="cloud">
-				<path d={area(hist)} fill={color} stroke-width=0.01em stroke=black/>
+				/* TODO : use luminance to encode distance from mean (kind of like choropleth map)
+				remember to check charts and channels! */
+				<defs>
+					<linearGradient id="gradient">
+					  <stop offset="0%" stop-color="#ef8a62" />
+					  <stop offset="5%" stop-color="#000000" />
+					  <stop offset="100%" stop-color="#67a9cf" />
+					</linearGradient>
+				  </defs>
+				<path d={area(hist)} fill="url(#gradient)" stroke-width=0.01em stroke=black/>
 			</g>
 
 			<g class="rain">
@@ -179,13 +213,13 @@
 
 			<g class="boxplot">
 				{#if orientation === "up"}
-					<rect x={valuesScale(Q25)} y={boxScale(0)} height={Math.abs(boxScale(1) - boxScale(0))} width={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke-width=0.1em stroke=black fill=transparent/>
-					<line x1={valuesScale(Q50)} x2={valuesScale(Q50)} y1={boxScale(0)} y2={boxScale(1)} stroke-width=0.1em stroke=black />
+					<rect x={valuesScale(Q25)} y={boxScale(0.8)} height={Math.abs(boxScale(0.8) - boxScale(0.2))} width={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke-width=0.1em stroke=black fill=transparent/>
+					<line x1={valuesScale(Q50)} x2={valuesScale(Q50)} y1={boxScale(0.2)} y2={boxScale(0.8)} stroke-width=0.1em stroke=black />
 					<line x1={valuesScale(Q10)} x2={valuesScale(Q25)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.11em stroke=black />
 					<line x1={valuesScale(Q75)} x2={valuesScale(Q90)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.1em stroke=black />
 				{:else}
-					<rect y={valuesScale(Q75)} x={boxScale(0)} width={Math.abs(boxScale(1) - boxScale(0))} height={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke=black fill=transparent/>
-					<line y1={valuesScale(Q50)} y2={valuesScale(Q50)} x1={boxScale(0)} x2={boxScale(1)} stroke=black />
+					<rect y={valuesScale(Q75)} x={boxScale(0.2)} width={Math.abs(boxScale(0.8) - boxScale(0.2))} height={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke=black fill=transparent/>
+					<line y1={valuesScale(Q50)} y2={valuesScale(Q50)} x1={boxScale(0.2)} x2={boxScale(0.8)} stroke=black />
 					<line y1={valuesScale(Q10)} y2={valuesScale(Q25)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
 					<line y1={valuesScale(Q75)} y2={valuesScale(Q90)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
 				{/if}
@@ -193,10 +227,9 @@
 				<!-- axes -->
 
 				<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} label={axisLabel} />
-		
 				<!-- <Axis orientation={orientation === "up" ? "left" : "bottom"} scale={valuesScale} {width} {height} {margin} label={axisLabel} /> -->
 			</g>
-		{/key}
+		<!-- {/key} -->
 	</svg>
 </div>
 
