@@ -4,6 +4,7 @@
 	import Scatterplot from './Scatterplot.svelte';
 	import BarChart from './BarChart.svelte';
 	import Raincloud from './Raincloud.svelte';
+	import Grouped_chart from './Grouped_chart.svelte';
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
 	import { onMount } from 'svelte';
@@ -40,14 +41,10 @@
 		TH: "throughput",
 		WA: "waste",
 		/* TODO : found these in the dataset, not sure of meaning */
-		WE: "FOOBAR",
-		EN: "FOOBAR",
-		LOC: "FOOBAR",
-		A: "FOOBAR",
-		EC: "FOOBAR",
-		IPC: "FOOBAR",
-		AV: "FOOBAR",
-		PH: "FOOBAR"
+		EN: "energy cost",
+		LOC: "lines of code",
+		IPC: "instructions per cycle",
+		AV: "availability",
 	};
 
 	let metric2indices = d3
@@ -85,9 +82,14 @@
 	</div>
 </div>
 
-<div class=raincontainer>
-	<div class="header1"> 
+<div class="container">
+	<div class="header1">
+		<h2>Does the choice of metric depends on which Conference we are targetting?</h2>
+		<Grouped_chart dataset={data.dataset}/>
 	</div>
+</div>
+
+<div class="raincontainer">
 	<div class=main>
 		<h2> Measure distribution for each metric</h2>
 		{#each metrics as metric}
@@ -110,7 +112,7 @@
 		padding: 2em;
 		/* put the controls on top of the plots with 32px of space in between */
 		display: flex;
-		flex-direction: column;
+		
 		gap: 2em;
 	}
 	/* Define margin-top for raincontainer */
@@ -130,7 +132,7 @@
 		/* center the barchart */
 		justify-content: center;
 		align-items: center;
-		display: flex;
+		/* display: flex; */
 		height: 100%;
 		flex: 1;
 	} 

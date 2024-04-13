@@ -59,8 +59,15 @@
 		const fullForm = fullForms.find((d) => d.metric === metric).fullForm;
 		tooltip.innerHTML = `${fullForm}: ${count}`;
 		tooltip.style.display = 'block';
-		tooltip.style.left = event.clientX + 'px';
-		tooltip.style.top = event.clientY + 'px';
+		// Calculate the position relative to the bar
+		const barRect = event.currentTarget.getBoundingClientRect();
+		const tooltipWidth = tooltip.offsetWidth;
+		const tooltipHeight = tooltip.offsetHeight;
+		const tooltipX = barRect.left + barRect.width / 2 - tooltipWidth / 2;
+		const tooltipY = barRect.top - tooltipHeight - 5; // Adjust as needed for spacing
+
+    tooltip.style.left = tooltipX + 'px';
+    tooltip.style.top = tooltipY + 'px';
 	}
 
 	function hideTooltip() {
