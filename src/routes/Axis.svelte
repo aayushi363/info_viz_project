@@ -10,7 +10,7 @@
 
 	// band scales don't have a ticks function. so if it's
 	// a band scale, we will use the domain as the ticks
-	$: ticks = scale.bandwidth ? scale.domain() : scale.ticks();
+	$: ticks = scale.bandwidth ? scale.domain() : (t => [t[0] - (t[1] - t[0])].concat(t).concat([t[t.length - 1] - (t[1] - t[0])]))(scale.ticks());
 
 	// we want the tick marks for band scales to be in the center of the bands,
 	// so we need to offset them by half of the band width
@@ -19,7 +19,7 @@
 
 <!-- whenever the scale changes, fade the axis out and in -->
 {#key scale}
-	<g transition:fade={{ duration: 250 }}>
+	<g>
 		{#if orientation === 'left'}
 			<g transform="translate({margin.left})">
 				{#each ticks as tick}
