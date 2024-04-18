@@ -121,20 +121,17 @@
 </div>
 
 <div class=raincloud-container>
-	<!-- TODO: Make these form a grid -->
-	<h2> Measure distribution for each metric</h2>
-	<div class=rain-clouds>
-		{#each metrics as metric}
-			{#if metric2indices.get(metric).length > 10}
-				<div class=rain>
-					<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
-				</div>
-			{/if}
-		{/each}
-	</div>
+	<h2>  What is the distribution of the measures?	</h2>
+	{#each metrics as metric}
+		{#if metric2indices.get(metric).length > 10}
+			<div class=rain>
+				<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+			</div>
+		{/if}
+	{/each}
 </div>
 <div class=scattercloud-container>
-	<ScattercloudPlot dataset={data.dataset} xFeature="Measure" yFeature="Citation" color=steelblue buckets=15 />
+	<ScattercloudPlot dataset={data.dataset} xFeature="Measure" yFeature="Citation" buckets=15 />
 </div>
 <style>
     /* Introduction Section */

@@ -41,16 +41,23 @@
 
 	let borderBoxSize;
 
+	// $: width = borderBoxSize
+	// 	? Math.min(borderBoxSize[0].blockSize, borderBoxSize[0].inlineSize)
+	// 	: 400;
+
+	// $: height = borderBoxSize
+	// 	? Math.min(borderBoxSize[0].blockSize, borderBoxSize[0].inlineSize)
+	// 	: 200;
+
 	$: width = borderBoxSize
-		? Math.min(borderBoxSize[0].blockSize, borderBoxSize[0].inlineSize)
-		: 400;
+		?borderBoxSize[0].inlineSize : 400;
 
 	$: height = borderBoxSize
-		? Math.min(borderBoxSize[0].blockSize, borderBoxSize[0].inlineSize)
-		: 400;
+		? borderBoxSize[0].blockSize : 200;
 
-	const margin = { top: 25, right: 20, bottom: 50, left: 60 };
-	const elevCloudFrac = 0.7; // percentage of space for cloud
+	$: console.log("BBS", borderBoxSize);
+	const margin = { top: 20, right: 20, bottom: 30, left: 20 };
+	const elevCloudFrac = 0.6; // percentage of space for cloud
 	const elevBoxFrac = 0.1; // percentage of space for boxplot
 	const elevRainFrac = 1.0 - elevCloudFrac - elevBoxFrac; // percentage of space for rain
 	// const rainExtraMargin = {up : 0, down: 0};
@@ -82,7 +89,8 @@
 			left: margin.left + 0 };
 
 	// Get the values that will be displayed
-	let values = filteredIndices.map((i) => dataset[i]).map(d => d[feature]);
+	let filteredDataset = filteredIndices.map((i) => dataset[i]);
+	let values = filteredDataset.map(d => d[feature]);
 
 	// Compute histogram of values mapping value in middle of bucket value to count
 	// Figure out size of buckets based on non-outliers and number of buckets
@@ -97,8 +105,7 @@
 	// Add one more bucket to start and end
 	hist.unshift([hist[0][0] - bucketSize,0])
 	hist.push([hist[hist.length - 1][0] + bucketSize,0]);
-
-	let countExtent = d3.extent(hist.map(d => d[1]));
+	let histExtent = d3.extent(hist.map(v => v[0]));
 
 	$: valueScaleRange = [visLowerBound, visUpperBound];
 
@@ -120,7 +127,8 @@
 	// Used for creating clouds
 	$: countScale = d3
 		.scaleLinear()
-		.domain(countExtent)
+		// The domain is the sum of counts so height corresponds with percentage
+		.domain([0,d3.sum(hist.map(d => d[1]))])
 		.range(orientation === "up"
 				? [height - cloudMargin.bottom, cloudMargin.top]
 				: [cloudMargin.left, width - cloudMargin.right]);
@@ -181,18 +189,53 @@
 				.attr("gradientTransform", "rotate(-90 1 0)");
 		}
 	});
+
+	let circleRadius = 5;
+
+	let tooltip;
+	let raindrop;
+	let raindropCX;
+	let raindropCY;
+	let tooltipContent = "";
+	function showTooltip(event, i) {
+        tooltipContent = filteredDataset[i]["Title"];
+
+		let px = valuesScale(values[i]);
+		let py = elevationScale(rainElevations[i]);
+
+		raindropCX = px;
+		raindropCY = py;
+		tooltip.style.visibility = "visible";
+		tooltip.style.left = `${px + 10}px`;
+		tooltip.style.top = `${py + 10}px`;
+		d3.select(event.target)
+			.attr("r", 2 * circleRadius);
+		raindrop.style.visibility = "visible";
+    }
+    function hideTooltip(event, i) {
+		tooltip.style.visibility = "hidden";
+		raindrop.style.visibility = "hidden";
+		d3.select(event.target)
+			.attr("r", circleRadius);
+    }
+
+	let rainElevations = values.map(d => Math.random());
 </script>
 
 <div class="raincloud" bind:this={raincloud} bind:borderBoxSize>
+	<h2 class="title"> {axisLabel} </h2>
+	<div bind:this={tooltip} class="tooltip" style="visibility:hidden">{tooltipContent}</div>
 	<svg {height} {width}>
 		<!-- {#key valueScaleRange} -->
 			<g class="cloud">
-				/* TODO : use luminance to encode distance from mean (kind of like choropleth map)
-				remember to check charts and channels! */
+				<!-- TODO : use luminance to encode distance from mean (kind of like choropleth map)
+				remember to check charts and channels! -->
 				<defs>
-					<linearGradient id="gradient">
-					  <stop offset="0%" stop-color="#ef8a62" />
-					  <stop offset="5%" stop-color="#000000" />
+					<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+					  <stop offset="0%" stop-color={`hsl(from ${color} calc(h + 100) s calc(l + 10))`} />
+					  <!-- <stop offset={`${(Q50 - histExtent[0])/(histExtent[1] - histExtent[0]) * 100 - 1}%`} stop-color="#67a9cf" /> -->
+					  <stop offset={`${(Q50 - histExtent[0])/(histExtent[1] - histExtent[0]) * 100}%`} stop-color="#000000" />
+					  <stop offset={`${(Q50 - histExtent[0])/(histExtent[1] - histExtent[0]) * 100 + 1}%`} stop-color="#67a9cf" />
 					  <stop offset="100%" stop-color="#67a9cf" />
 					</linearGradient>
 				  </defs>
@@ -201,9 +244,12 @@
 
 			<g class="rain">
 				{#if orientation === "up"}
-					{#each values as value}
-						<circle r=2 cx={valuesScale(value)} cy={elevationScale(Math.random())} fill={color}/>
+					{#each values as value, i}
+						<circle r={circleRadius} cx={valuesScale(value)} cy={elevationScale(rainElevations[i])} fill={color}
+								on:mouseenter={(event) => showTooltip(event, i)}
+								on:mouseleave={(event) => hideTooltip(event, i)}/>
 					{/each}
+					<circle bind:this={raindrop} r={2 * circleRadius} cx={raindropCX} cy={raindropCY} fill=none stroke=black style="visibility:hidden"/>
 				{:else}
 					{#each values as value}
 						<circle r=2 cx={elevationScale(Math.random())} cy={valuesScale(value)} fill={color}/>
@@ -226,7 +272,7 @@
 
 				<!-- axes -->
 
-				<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} label={axisLabel} />
+				<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} />
 				<!-- <Axis orientation={orientation === "up" ? "left" : "bottom"} scale={valuesScale} {width} {height} {margin} label={axisLabel} /> -->
 			</g>
 		<!-- {/key} -->
@@ -236,19 +282,39 @@
 <style>
     .raincloud {
         /* Set dimensions for each raincloud */
-        width: calc(33.33% - 20px); /* Subtract margin */
-        height: calc(33.33% - 20px); /* Subtract margin */
+        width: calc(25% - 20px); /* Subtract margin */
+        height: 16vw; /* Subtract margin */
+		/* height: 200px; */
         margin: 10px; /* Add margin between rainclouds */
         float: left; /* Arrange rainclouds in a grid */
+		position: relative;
         cursor: move;
 		border: 1px solid black;
-
     }
+
+	.title {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+	}
 
     /* Adjust SVG dimensions */
     svg {
         width: 100%;
         height: 100%;
+		z-index: 0;
+    }
+
+	.tooltip {
+        position: absolute;
+		width: 50%;
+		left:10%;
+		top: 10px;
+        background-color: white;
+        border: 1px solid black;
+        padding: 5px;
+        border-radius: 3px;
+		z-index:5;
     }
 </style>
 
