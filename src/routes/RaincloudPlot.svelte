@@ -8,10 +8,12 @@
 	export let dataset;
 	export let feature;
 	export let filteredIndices;
-	export let color;
 	export let buckets;
 	export let orientation = "up";
 	export let axisLabel;
+
+	let cloudColorList = [ /*"#ffffff",*/ "#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373"/*, "#525252","#252525", '#000000'*/].reverse();
+	let rainColorList = [ /*"#f7fbff",*/ "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5"/*, "#08519c", "#08306b" */].reverse();
 
 	/* Copied directly from: https://stackoverflow.com/a/45804710/6573510 */
 	function filterOutliers(someArray) {
@@ -55,7 +57,6 @@
 	$: height = borderBoxSize
 		? borderBoxSize[0].blockSize : 200;
 
-	$: console.log("BBS", borderBoxSize);
 	const margin = { top: 20, right: 20, bottom: 30, left: 20 };
 	const elevCloudFrac = 0.6; // percentage of space for cloud
 	const elevBoxFrac = 0.1; // percentage of space for boxplot
@@ -91,21 +92,35 @@
 	// Get the values that will be displayed
 	let filteredDataset = filteredIndices.map((i) => dataset[i]);
 	let values = filteredDataset.map(d => d[feature]);
+	let Q50 = d3.quantile(values, 0.5);
 
 	// Compute histogram of values mapping value in middle of bucket value to count
 	// Figure out size of buckets based on non-outliers and number of buckets
 	let [visLowerBound, visUpperBound] = d3.extent(filterOutliers(values));
 	let [lowerBound, upperBound] = d3.extent(values);
 	let bucketSize = (visUpperBound - visLowerBound) / (buckets - 2);
+	// Compute the buckets so that the mean is at the middle of a bucket.
+	// I'm not able to get the cloud coloring correct, so this is the next best thing.
+	// by splitting the cloud into two, I can color each piece to achieve.
+	// let histDomain = d3.range(
+	// 	Q50 - 0.5 * bucketSize > lowerBound
+	// 	? Q50 - (Math.ceil((Q50 - 0.5 * bucketSize - lowerBound) / bucketSize) + 0.5) * bucketSize
+	// 	: 2 * Q50 - lowerBound - bucketSize,
+	// 	upperBound + bucketSize + 1, bucketSize);
 	let hist = d3
 		.bin()
 		.thresholds(d3.range(lowerBound - bucketSize, upperBound + bucketSize + 1, bucketSize))
 		(values)
+	// if (! (histDomain, Q50 - 0.5 * bucketSize > lowerBound)) {
+	// 	$: console.log("HIST", axisLabel, hist, "Q50", Q50, "lowerBound", lowerBound, "bucketSize", bucketSize, "histDomain", histDomain);
+	// }
 		.map(bin => [(bin.x0 + bin.x1) / 2.0, bin.length]);
 	// Add one more bucket to start and end
 	hist.unshift([hist[0][0] - bucketSize,0])
 	hist.push([hist[hist.length - 1][0] + bucketSize,0]);
-	let histExtent = d3.extent(hist.map(v => v[0]));
+
+	$: histExtent = d3.extent(hist.map(d => d[0]));
+	$: console.log('HIST', axisLabel, histExtent)
 
 	$: valueScaleRange = [visLowerBound, visUpperBound];
 
@@ -164,7 +179,6 @@
 				: [boxMargin.left, width - boxMargin.right]);
 	$: Q10 = d3.quantile(values, 0.1);
 	$: Q25 = d3.quantile(values, 0.25);
-	$: Q50 = d3.quantile(values, 0.5);
 	$: Q75 = d3.quantile(values, 0.75);
 	$: Q90 = d3.quantile(values, 0.9);
 
@@ -220,6 +234,10 @@
     }
 
 	let rainElevations = values.map(d => Math.random());
+
+	$: rainColorScale = d3.scaleSequential()
+		.domain([lowerBound, upperBound])
+		.interpolator(d3.interpolateRgbBasis(rainColorList));
 </script>
 
 <div class="raincloud" bind:this={raincloud} bind:borderBoxSize>
@@ -232,27 +250,30 @@
 				remember to check charts and channels! -->
 				<defs>
 					<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-					  <stop offset="0%" stop-color={`hsl(from ${color} calc(h + 100) s calc(l + 10))`} />
-					  <!-- <stop offset={`${(Q50 - histExtent[0])/(histExtent[1] - histExtent[0]) * 100 - 1}%`} stop-color="#67a9cf" /> -->
-					  <stop offset={`${(Q50 - histExtent[0])/(histExtent[1] - histExtent[0]) * 100}%`} stop-color="#000000" />
-					  <stop offset={`${(Q50 - histExtent[0])/(histExtent[1] - histExtent[0]) * 100 + 1}%`} stop-color="#67a9cf" />
-					  <stop offset="100%" stop-color="#67a9cf" />
+						<stop offset="0%" stop-color={cloudColorList[0]}/>
+						{#each cloudColorList as color, i}
+							{#if i > 0 && i < cloudColorList.length - 1}
+								<stop offset={`${100 / cloudColorList.length * i}%`} stop-color={color}/>
+							{/if}
+						{/each}
+						<stop offset="100%" stop-color={cloudColorList[cloudColorList.length - 1]}/>
 					</linearGradient>
-				  </defs>
-				<path d={area(hist)} fill="url(#gradient)" stroke-width=0.01em stroke=black/>
+				</defs>
+				<!-- Skew the below filter checks by some small fraction of the bucket size to account for numerical imprecision -->
+				<path d={area(hist)} fill="url(#gradient)" stroke-width=1px stroke=black/>
 			</g>
 
 			<g class="rain">
 				{#if orientation === "up"}
 					{#each values as value, i}
-						<circle r={circleRadius} cx={valuesScale(value)} cy={elevationScale(rainElevations[i])} fill={color}
+						<circle r={circleRadius} cx={valuesScale(value)} cy={elevationScale(rainElevations[i])} fill={rainColorScale(value)} stroke=black stroke-width=0.5px
 								on:mouseenter={(event) => showTooltip(event, i)}
 								on:mouseleave={(event) => hideTooltip(event, i)}/>
 					{/each}
-					<circle bind:this={raindrop} r={2 * circleRadius} cx={raindropCX} cy={raindropCY} fill=none stroke=black style="visibility:hidden"/>
+					<circle bind:this={raindrop} r={2 * circleRadius} cx={raindropCX} cy={raindropCY} fill=none stroke=black stroke-width=3px style="visibility:hidden"/>
 				{:else}
 					{#each values as value}
-						<circle r=2 cx={elevationScale(Math.random())} cy={valuesScale(value)} fill={color}/>
+						<circle r=2 cx={elevationScale(Math.random())} cy={valuesScale(value)} fill={"steelblue"}/>
 					{/each}
 				{/if}
 			</g>

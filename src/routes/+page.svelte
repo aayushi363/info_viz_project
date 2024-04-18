@@ -125,7 +125,7 @@
 	{#each metrics as metric}
 		{#if metric2indices.get(metric).length > 10}
 			<div class=rain>
-				<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} color="steelblue" buckets=15 axisLabel={metric2str[metric]} />
+				<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} buckets=25 axisLabel={metric2str[metric]} />
 			</div>
 		{/if}
 	{/each}
