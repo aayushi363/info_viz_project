@@ -7,6 +7,7 @@
 	export let height;
 	export let scale;
 	export let label = '';
+	export let color = "black";
 
 	// band scales don't have a ticks function. so if it's
 	// a band scale, we will use the domain as the ticks
@@ -24,13 +25,13 @@
 			<g transform="translate({margin.left})">
 				{#each ticks as tick}
 					<g transform="translate(0,{scale(tick) + offset})">
-						<line x2={-6} stroke="grey" />
-						<text text-anchor="end" dominant-baseline="middle" fill="black" x={-10}>{tick}</text>
+						<line x2={-6} stroke={color} />
+						<text text-anchor="end" dominant-baseline="middle" fill={color} x={-10}>{tick}</text>
 					</g>
 				{/each}
 
 				{#if label}
-					<text text-anchor="start" dominant-baseline="hanging" fill="black" x={-margin.left} y={0}>
+					<text text-anchor="start" dominant-baseline="hanging" fill={color} x={-margin.left} y={0}>
 						{label}
 					</text>
 				{/if}
@@ -39,13 +40,13 @@
 			<g transform="translate(0,{height - margin.bottom})">
 				{#each ticks as tick}
 					<g transform="translate({scale(tick) + offset})">
-						<line y2={6} stroke="gray" />
-						<text text-anchor="middle" dominant-baseline="hanging" fill="gray" y={10}>{tick}</text>
+						<line y2={6} stroke={color} />
+						<text text-anchor="middle" dominant-baseline="hanging" fill={color} y={10}>{tick}</text>
 					</g>
 				{/each}
 
 				{#if label}
-					<text text-anchor="end" dominant-baseline="hanging" fill="black" x={width} y={30}>
+					<text text-anchor="end" dominant-baseline="hanging" fill={color} x={width} y={30}>
 						{label}
 					</text>
 				{/if}

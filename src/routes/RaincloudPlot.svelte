@@ -281,20 +281,20 @@
 
 			<g class="boxplot">
 				{#if orientation === "up"}
-					<rect x={valuesScale(Q25)} y={boxScale(0.8)} height={Math.abs(boxScale(0.8) - boxScale(0.2))} width={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke-width=0.1em stroke=black fill=transparent/>
-					<line x1={valuesScale(Q50)} x2={valuesScale(Q50)} y1={boxScale(0.2)} y2={boxScale(0.8)} stroke-width=0.1em stroke=black />
-					<line x1={valuesScale(Q10)} x2={valuesScale(Q25)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.11em stroke=black />
-					<line x1={valuesScale(Q75)} x2={valuesScale(Q90)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.1em stroke=black />
+					<rect x={valuesScale(Q25)} y={boxScale(0.8)} height={Math.abs(boxScale(0.8) - boxScale(0.2))} width={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke-width=0.1em stroke={color} stroke-opacity={0.75} fill=transparent/>
+					<line x1={valuesScale(Q50)} x2={valuesScale(Q50)} y1={boxScale(0.2)} y2={boxScale(0.8)} stroke-width=0.1em stroke={color} stroke-opacity={0.75} />
+					<line x1={valuesScale(Q10)} x2={valuesScale(Q25)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.11em stroke={color} stroke-opacity={0.75} />
+					<line x1={valuesScale(Q75)} x2={valuesScale(Q90)} y1={boxScale(0.5)} y2={boxScale(0.5)} stroke-width=0.1em stroke={color} stroke-opacity={0.75} />
 				{:else}
-					<rect y={valuesScale(Q75)} x={boxScale(0.2)} width={Math.abs(boxScale(0.8) - boxScale(0.2))} height={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke=black fill=transparent/>
-					<line y1={valuesScale(Q50)} y2={valuesScale(Q50)} x1={boxScale(0.2)} x2={boxScale(0.8)} stroke=black />
-					<line y1={valuesScale(Q10)} y2={valuesScale(Q25)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
-					<line y1={valuesScale(Q75)} y2={valuesScale(Q90)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke=black />
+					<rect y={valuesScale(Q75)} x={boxScale(0.2)} width={Math.abs(boxScale(0.8) - boxScale(0.2))} height={Math.abs(valuesScale(Q75) - valuesScale(Q25))} stroke={color} stroke-opacity={0.75} fill=transparent/>
+					<line y1={valuesScale(Q50)} y2={valuesScale(Q50)} x1={boxScale(0.2)} x2={boxScale(0.8)} stroke={color} stroke-opacity={0.75} />
+					<line y1={valuesScale(Q10)} y2={valuesScale(Q25)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke={color} stroke-opacity={0.75} />
+					<line y1={valuesScale(Q75)} y2={valuesScale(Q90)} x1={boxScale(0.5)} x2={boxScale(0.5)} stroke={color} stroke-opacity={0.75} />
 				{/if}
 
 				<!-- axes -->
 
-				<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} />
+				<Axis orientation={orientation === "up" ? "bottom" : "left"} scale={valuesScale} {width} {height} {margin} color="gray" />
 				<!-- <Axis orientation={orientation === "up" ? "left" : "bottom"} scale={valuesScale} {width} {height} {margin} label={axisLabel} /> -->
 			</g>
 		<!-- {/key} -->
