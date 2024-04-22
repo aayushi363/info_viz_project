@@ -1,13 +1,54 @@
-field,count
-Operating Systems and Kernel Development,31
-Distributed Systems,32
-Energy Efficiency and Power Management,22
-Machine Learning and Deep Learning Systems,57
-Graph Processing and Analysis,21
-Cloud Computing and Virtualization,33
-Storage Systems,29
-Programming Models and Compiler Technologies,7
-Hardware and Architecture,102
-Security and Privacy,13
-Networking and Communication,9
-Emerging Technologies and Novel Computing Paradigms,13
+field,count,conference
+Operating Systems and Kernel Development,32,all
+Operating Systems and Kernel Development,11,EuroSys
+Operating Systems and Kernel Development,9,MICRO
+Operating Systems and Kernel Development,12,SOSP
+Distributed Systems,33,all
+Distributed Systems,12,EuroSys
+Distributed Systems,4,MICRO
+Distributed Systems,17,SOSP
+Energy Efficiency and Power Management,22,all
+Energy Efficiency and Power Management,5,EuroSys
+Energy Efficiency and Power Management,15,MICRO
+Energy Efficiency and Power Management,2,SOSP
+Machine Learning and Deep Learning Systems,57,all
+Machine Learning and Deep Learning Systems,10,EuroSys
+Machine Learning and Deep Learning Systems,43,MICRO
+Machine Learning and Deep Learning Systems,4,SOSP
+Graph Processing and Analysis,21,all
+Graph Processing and Analysis,8,EuroSys
+Graph Processing and Analysis,8,MICRO
+Graph Processing and Analysis,5,SOSP
+Cloud Computing,23,all
+Cloud Computing,11,EuroSys
+Cloud Computing,9,MICRO
+Cloud Computing,3,SOSP
+Storage Systems,29,all
+Storage Systems,5,EuroSys
+Storage Systems,10,MICRO
+Storage Systems,14,SOSP
+Programming Models and Compiler Technologies,7,all
+Programming Models and Compiler Technologies,2,EuroSys
+Programming Models and Compiler Technologies,3,MICRO
+Programming Models and Compiler Technologies,2,SOSP
+Architecture,33,all
+Architecture,2,EuroSys
+Architecture,31,MICRO
+Virtualization,9,all
+Virtualization,5,EuroSys
+Virtualization,3,MICRO
+Virtualization,1,SOSP
+Security and Privacy,13,all
+Security and Privacy,1,EuroSys
+Security and Privacy,11,MICRO
+Security and Privacy,1,SOSP
+Networking and Communication,9,all
+Networking and Communication,1,EuroSys
+Networking and Communication,5,MICRO
+Networking and Communication,3,SOSP
+Hardware,68,all
+Hardware,2,EuroSys
+Hardware,64,MICRO
+Hardware,2,SOSP
+Emerging Technologies and Novel Computing Paradigms,13,all
+Emerging Technologies and Novel Computing Paradigms,13,MICRO
