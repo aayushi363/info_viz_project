@@ -13,6 +13,23 @@
     let tooltipX = 0;  // X position of the tooltip relative to the circle
     let tooltipY = 0;  // Y position of the tooltip relative to the circle
 
+    const customColorScheme = [
+        "#EA9180",
+        "#E99196",
+        "#DE95AB",
+        "#CB9DBD",
+        "#B2A6C7",
+        "#96AFC9",
+        "#7DB6C2",
+        "#6FBBB4",
+        '#71BDA0',
+        "#80BD8A",
+        "#96BB76",
+        "#AFB767",
+        "#C8B061",
+        "#DEA964",
+    ]
+
     onMount(async () => {
         data = await d3.csv('/research_direction.csv', d => ({
             field: d.field,
@@ -38,7 +55,7 @@
 
         const colorScale = d3.scaleOrdinal()
             .domain(filteredData.map(d => d.field))
-            .range(d3.schemeTableau10);
+            .range(customColorScheme);
 
         const radiusScale = d3.scaleSqrt()
             .domain([0, d3.max(filteredData, d => d.count)])
