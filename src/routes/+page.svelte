@@ -141,9 +141,9 @@
 		</div>
 	{/each}
 </div>
-<div class=scattercloud-container>
+<!-- <div class=scattercloud-container>
 	<ScattercloudPlot dataset={data.dataset} xFeature="Measure" yFeature="Citation" buckets=15 />
-</div>
+</div> -->
 <style>
     /* Introduction Section */
     .introduction {
