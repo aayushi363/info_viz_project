@@ -74,7 +74,12 @@
 	// 	.reverse();
 
 	// $: color = d3.scaleOrdinal().domain(categories).range(d3.schemeTableau10);
+
+	// let raincloudColors = ["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99"];
+	let raincloudColors = ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5"];
+	let raincloudMetrics = metrics.filter(m => metric2indices.get(m).length > 10).map((m,i) => [m,raincloudColors[i % raincloudColors.length]]);
 </script>
+
 <div class="introduction">
 	<h1 class="title">Exploring Trends and Patterns in Systems Research</h1>
 	<p>
@@ -130,12 +135,10 @@
 	<h2 style="text-align: center; color:darkred;"> Domain Question: What is the distribution of the measures?	</h2>
 	<h2 style="text-align: center; color:darkblue;"> Data Question: How does the shape of measure distribution across various metrics</h2>
 	</div>
-	{#each metrics as metric}
-		{#if metric2indices.get(metric).length > 10}
-			<div class=rain>
-				<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} buckets=25 axisLabel={metric2str[metric]} />
-			</div>
-		{/if}
+	{#each raincloudMetrics as [metric, color]}
+		<div class=rain>
+			<RaincloudPlot dataset={data.dataset} feature="Measure" filteredIndices={metric2indices.get(metric)} buckets=25 axisLabel={metric2str[metric]} {color}/>
+		</div>
 	{/each}
 </div>
 <div class=scattercloud-container>

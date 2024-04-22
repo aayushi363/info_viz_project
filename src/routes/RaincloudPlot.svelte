@@ -11,9 +11,10 @@
 	export let buckets;
 	export let orientation = "up";
 	export let axisLabel;
+	export let color;
 
-	let cloudColorList = [ /*"#ffffff",*/ "#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373"/*, "#525252","#252525", '#000000'*/].reverse();
-	let rainColorList = [ /*"#f7fbff",*/ "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5"/*, "#08519c", "#08306b" */].reverse();
+	// let cloudColorList = [ /*"#ffffff",*/ "#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373"/*, "#525252","#252525", '#000000'*/].reverse();
+	// let rainColorList = [ /*"#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5",*/ "#08519c"/*, "#08306b" */].reverse();
 
 	/* Copied directly from: https://stackoverflow.com/a/45804710/6573510 */
 	function filterOutliers(someArray) {
@@ -235,9 +236,9 @@
 
 	let rainElevations = values.map(d => Math.random());
 
-	$: rainColorScale = d3.scaleSequential()
-		.domain([lowerBound, upperBound])
-		.interpolator(d3.interpolateRgbBasis(rainColorList));
+	// $: rainColorScale = d3.scaleSequential()
+	// 	.domain([lowerBound, upperBound])
+	// 	.interpolator(d3.interpolateRgbBasis(rainColorList));
 </script>
 
 <div class="raincloud" bind:this={raincloud} bind:borderBoxSize>
@@ -248,7 +249,7 @@
 			<g class="cloud">
 				<!-- TODO : use luminance to encode distance from mean (kind of like choropleth map)
 				remember to check charts and channels! -->
-				<defs>
+				<!-- <defs>
 					<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
 						<stop offset="0%" stop-color={cloudColorList[0]}/>
 						{#each cloudColorList as color, i}
@@ -258,15 +259,15 @@
 						{/each}
 						<stop offset="100%" stop-color={cloudColorList[cloudColorList.length - 1]}/>
 					</linearGradient>
-				</defs>
+				</defs> -->
 				<!-- Skew the below filter checks by some small fraction of the bucket size to account for numerical imprecision -->
-				<path d={area(hist)} fill="url(#gradient)" stroke-width=1px stroke=black/>
+				<path d={area(hist)} fill={color} stroke-width=0.5px stroke=black/>
 			</g>
 
 			<g class="rain">
 				{#if orientation === "up"}
 					{#each values as value, i}
-						<circle r={circleRadius} cx={valuesScale(value)} cy={elevationScale(rainElevations[i])} fill={rainColorScale(value)} stroke=black stroke-width=0.5px
+						<circle r={circleRadius} cx={valuesScale(value)} cy={elevationScale(rainElevations[i])} fill={color} fill-opacity={0.5} stroke=gray stroke-width=0.5px
 								on:mouseenter={(event) => showTooltip(event, i)}
 								on:mouseleave={(event) => hideTooltip(event, i)}/>
 					{/each}
@@ -310,13 +311,14 @@
         float: left; /* Arrange rainclouds in a grid */
 		position: relative;
         cursor: move;
-		border: 1px solid black;
+		border: 1px solid rgb(255, 255, 255);
     }
 
 	.title {
 		position: absolute;
 		top: 10px;
 		left: 10px;
+		color: rgb(100, 100, 100);
 	}
 
     /* Adjust SVG dimensions */

@@ -24,7 +24,7 @@
 			<g transform="translate({margin.left})">
 				{#each ticks as tick}
 					<g transform="translate(0,{scale(tick) + offset})">
-						<line x2={-6} stroke="black" />
+						<line x2={-6} stroke="grey" />
 						<text text-anchor="end" dominant-baseline="middle" fill="black" x={-10}>{tick}</text>
 					</g>
 				{/each}
@@ -39,8 +39,8 @@
 			<g transform="translate(0,{height - margin.bottom})">
 				{#each ticks as tick}
 					<g transform="translate({scale(tick) + offset})">
-						<line y2={6} stroke="black" />
-						<text text-anchor="middle" dominant-baseline="hanging" fill="black" y={10}>{tick}</text>
+						<line y2={6} stroke="gray" />
+						<text text-anchor="middle" dominant-baseline="hanging" fill="gray" y={10}>{tick}</text>
 					</g>
 				{/each}
 
