@@ -1,11 +1,18 @@
 <script>
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
+    export let borderBoxSize;
+
 
     let data = [];
-    const margin = { top: 20, right: 20, bottom: 60, left: 40 };
-    const width = 800 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    // Set dimensions
+    let width = borderBoxSize
+        ? Math.min(borderBoxSize[0].blockSize, borderBoxSize[0].inlineSize)
+        : 800;
+    let height = borderBoxSize
+        ? Math.min(borderBoxSize[0].blockSize, borderBoxSize[0].inlineSize)
+        : 800;
+    const margin = { top: 20, right: 20, bottom: 50, left: 60 };
 
     // Color scale for conferences
     const color = d3.scaleOrdinal()
@@ -37,7 +44,7 @@
     }
 </script>
 
-<div class="conferencemetric">
+<div class="conferencemetric" bind:borderBoxSize>
     <svg width={width + margin.left + margin.right} height={height + margin.top + margin.bottom}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
             <!-- Draw bars -->
@@ -85,5 +92,12 @@
     }
     text {
         font-family: 'Arial', sans-serif;
+    }
+    .conferencemetric {
+        /* Center the chart */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* border: 1px solid black; */
     }
 </style>

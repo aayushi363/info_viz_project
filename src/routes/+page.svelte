@@ -5,7 +5,7 @@
 	import BarChart from './BarChart.svelte';
 	import RaincloudPlot from './RaincloudPlot.svelte';
 	import ScattercloudPlot from './ScattercloudPlot.svelte';
-	import Grouped_chart from './Grouped_chart.svelte';
+	import Grouped_chart from './grouped_new.svelte';
 	import PlayerList from './PlayerList.svelte';
 	import ColorLegend from './ColorLegend.svelte';
 	import Circles from './circles.svelte';
@@ -85,7 +85,8 @@
 	<div class="header1">
 		<h2>Let's dive into the realm of research and uncover the hottest themes that have captivated the minds of researchers, boasting the highest number of papers.
 		</h2>
-		<h2 style="text-align: center; color:darkred;">How do category compare to each other?</h2>
+		<h2 style="text-align: center; color:darkred;">Domain Question: How do categories compare to each other?</h2>
+		<h2 style="text-align: center; color:darkblue;">Data Question: Distribution of papers amongst 12 major categories</h2>
 
 		<Circles/>
 	</div>
@@ -93,9 +94,10 @@
 
 <div class="container">
 	<div class="header1">
-		<h2>Let's see which conferecen have the highest bar
+		<h2>Let us understand the relative performance of different metrics presented at three distinct conferences. It's a comparison between conferences regarding the metrics they cover.
 		</h2>
-		<h2 style="text-align: center; color:darkred;">How do category compare to each other?</h2>
+		<h2 style="text-align: center; color:darkred;">Domain question: How do metrics compare across three different conferences?</h2>
+		<h2 style="text-align: center; color:darkblue;padding: 1.5%">Data Question: How do the values of various metrics published at SOSP, EuroSys and MICRO compare? </h2>
 
 		<ConferenceMetric/>
 	</div>
@@ -106,7 +108,8 @@
 		<h2> Describing the predominant metrics used in Systems Research helps identify core evaluation criteria, track prevalent research trends, and evaluate the relevance of emerging methodologies. This visualization shows that Throughput is the most popular metric in the Systems Research community. 
 			</h2>
 			<p> </p>
-		<h2 style="text-align: center; color:darkred;">What metric does the author use more frequently in Sytems Research to get Published?</h2>
+		<h2 style="text-align: center; color:darkred;">Domain Question: What metric does the author use more frequently in Sytems Research to get Published?</h2>
+		<h2 style="text-align: center; color:darkblue; padding: 1.5%">Data Question: For each metric, what is the number of papers published in Systems Research? </h2>
 		<BarChart dataset={data.dataset}/>
 	</div>
 </div>
@@ -116,12 +119,17 @@
 		<h2> Studying metric choices across conferences unveils community preferences, aiding researchers in aligning their work with conference expectations and organizers in gauging research diversity and evolution.
 		</h2>
 		<h2  style="text-align: center; color:darkred;">Does the choice of metric depends on which Conference we are targetting?</h2>
+		<h2 style="text-align: center; color:darkblue; padding: 1.5%">Data Question:How does the order of the top 5 metrics vary across different conferences?</h2>
 		<Grouped_chart dataset={data.dataset}/>
 	</div>
 </div>
 
 <div class=raincloud-container>
-	<h2>  What is the distribution of the measures?	</h2>
+	<div class="header1">
+	<h2> Let us explore a visualization where users can not only observe the distribution of measures for each metric but also discern the shape of the distribution. For instance, all these distributions exhibit strong clustering. Additionally, users can effortlessly compare distributions of different measures.</h2>
+	<h2 style="text-align: center; color:darkred;"> Domain Question: What is the distribution of the measures?	</h2>
+	<h2 style="text-align: center; color:darkblue;"> Data Question: How does the shape of measure distribution across various metrics</h2>
+	</div>
 	{#each metrics as metric}
 		{#if metric2indices.get(metric).length > 10}
 			<div class=rain>
