@@ -81,7 +81,7 @@
 </script>
 
 <div class="introduction">
-	<h1 class="title">Exploring Trends and Patterns in Systems Research</h1>
+	<h1 class="title">Exploring how metrics and categories vary across conferences to understand the dynamics influencing Systems Research publications</h1>
 	<p>
 		Step into the fascinating world of Systems Research! Here, we delve into the big ideas that shape the field of Computer Science. Our webpage is your gateway to exploring the latest trends and intriguing patterns. We've meticulously collected data from three major conferences dedicated to Systems Research. Join us on this journey as we uncover the exciting developments and insights in this dynamic field.	</p>
 </div>
