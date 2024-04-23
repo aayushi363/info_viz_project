@@ -133,7 +133,7 @@
 	<div class="header1">
 	<h2> Let us explore a visualization where users can not only observe the distribution of measures for each metric but also discern the shape of the distribution. For instance, all these distributions exhibit strong clustering. Additionally, users can effortlessly compare distributions of different measures.</h2>
 	<h2 style="text-align: center; color:darkred;"> Domain Question: What is the distribution of the measures?	</h2>
-	<h2 style="text-align: center; color:darkblue;"> Data Question: How does the shape of measure distribution across various metrics</h2>
+	<h2 style="text-align: center; color:darkblue;"> Data Question: How does the shape of measure distribution vary across various metrics</h2>
 	</div>
 	{#each raincloudMetrics as [metric, color]}
 		<div class=rain>
