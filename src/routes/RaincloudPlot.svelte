@@ -243,6 +243,7 @@
 
 <div class="raincloud" bind:this={raincloud} bind:borderBoxSize>
 	<h2 class="title"> {axisLabel} </h2>
+	<p class="label">measure</p>
 	<div bind:this={tooltip} class="tooltip" style="visibility:hidden">{tooltipContent}</div>
 	<svg {height} {width}>
 		<!-- {#key valueScaleRange} -->
@@ -319,6 +320,13 @@
 		top: 10px;
 		left: 10px;
 		color: rgb(100, 100, 100);
+	}
+
+	.label {
+		position: absolute;
+		bottom: -20px;
+		right: 10px;
+		color: gray;
 	}
 
     /* Adjust SVG dimensions */
